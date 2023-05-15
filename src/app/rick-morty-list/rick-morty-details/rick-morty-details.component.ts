@@ -6,28 +6,36 @@ import { RickMortyService } from 'src/app/rick-morty.service';
 @Component({
   selector: 'app-rick-morty-details',
   templateUrl: './rick-morty-details.component.html',
-  styleUrls: ['./rick-morty-details.component.scss']
+  styleUrls: ['./rick-morty-details.component.scss'],
 })
 export class RickMortyDetailsComponent {
   data: any;
-  constructor(private rickMortyService: RickMortyService, private router: Router){}
+  id: number = 0;
+  constructor(
+    private rickMortyService: RickMortyService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
+    this.id = Number(localStorage.getItem('id'));
+    this.rickMortyService.characterId.next(this.id);
     this.rickMortyService.characterId.subscribe((id: number) => {
-      if(id){
+      localStorage.setItem('id', id.toString());
+      if (id) {
         this.getCharacterById(id);
       }
-    })
-  }
-
-  getCharacterById(id: number){
-    lastValueFrom(this.rickMortyService.getCharacterById(id)).then((result: any)=>{
-      this.data = result;
-      console.log(this.data); 
     });
   }
 
-  onClick(){
+  getCharacterById(id: number): void {
+    lastValueFrom(this.rickMortyService.getCharacterById(id)).then(
+      (result: any) => {
+        this.data = result;
+      }
+    );
+  }
+
+  onClick(): void {
     this.router.navigate(['/character']);
   }
 }
